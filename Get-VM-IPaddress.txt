@@ -1,0 +1,13 @@
+$vmlist =  Get-Content -Path E:\Profiles\nnit-hgzl\Desktop\VMs.txt
+foreach ( $each in $vmlist ) {
+ $interface = ((Get-AzVM -Name $each | select -ExpandProperty networkprofile | select -ExpandProperty networkinterfaces | Select-Object -ExpandProperty id).split("/"))[8]
+ $defaultinterface = Get-AzNetworkInterface -Name $interface
+ $ipaddr = Get-AzNetworkInterfaceIpConfig -NetworkInterface $defaultinterface | select -ExpandProperty PrivateIPaddress
+
+ $obj = New-Object -TypeName PSobject
+ $obj | Add-Member -Name VM -Value $each -MemberType NoteProperty
+ $obj | Add-Member -Name PrivateIPaddr -Value $ipaddr -MemberType NoteProperty
+
+ $obj | select *
+ }
+

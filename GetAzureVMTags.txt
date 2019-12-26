@@ -1,0 +1,18 @@
+$allinformation = Import-Csv -Path C:\temp\ArlaAzure\Information.csv
+
+foreach ( $every in $allinformation ) {
+
+$rgname = $every.ResourceGroup
+
+$servername = $every.ServerName
+
+$var = (Get-AzResource -ResourceGroupName "$rgname" -Name "$servername").Tags
+
+$var.GetEnumerator() | export-csv -Path C:\temp\ArlaAzure\EveryTags.csv -NoTypeInformation
+
+
+$Writeback = import-csv C:\temp\ArlaAzure\EveryTags.csv
+
+$Writeback | Add-Member -MemberType NoteProperty -Name 'Servername' -Value $servername 
+$Writeback | Export-Csv -Path C:\temp\ArlaAzure\final.csv -NoTypeInformation -Append
+}

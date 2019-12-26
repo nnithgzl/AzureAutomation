@@ -1,0 +1,22 @@
+[CmdletBinding()]
+Param(
+    [Parameter(Mandatory=$true)] 
+    [string] $SubScription,
+    [Parameter(Mandatory=$true)] 
+    [string] $VM
+     )
+ Connect-AzAccount
+ Select-AzSubscription "$SubScription" | Out-Null
+
+
+$AllVault = Get-AzRecoveryServicesVault | select ResourceGroupName,Name
+
+foreach ( $eachVault in $AllVault ) {
+ Get-AzRecoveryServicesVault -ResourceGroupName $eachVault.ResourceGroupName -Name $eachVault.Name | Set-AzRecoveryServicesVaultContext | Out-Null
+ $bckjob = Get-AzRecoveryServicesBackupJob
+
+if ( $bckjob.WorkloadName -contains $VM ) {
+$bckjob | ?{$_.WorkloadName -eq $VM} | select *
+break;
+                                          }
+                                    }

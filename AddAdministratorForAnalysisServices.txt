@@ -1,0 +1,27 @@
+param (
+        [Parameter(Mandatory=$true)][string]$WhatneedAdd,
+       [Parameter(Mandatory=$true)][string]$SubScriptionName,
+       [Parameter(Mandatory=$true)] [string]$AnalysisServiceName
+          )
+Connect-AzAccount
+$AllSubScriptionName = Get-AzSubscription | Select-Object -ExpandProperty Name
+if ( $AllSubScriptionName -contains $SubScriptionName ) 
+{
+    Select-AzSubscription -Subscription $SubScriptionName 
+
+$var = Get-AzAnalysisServicesServer | ?{$_.Name -eq "$AnalysisServiceName"} | Select-Object -ExpandProperty Asadministrators
+$var += "$WhatneedAdd"
+
+
+$mystring = $null
+foreach ($Everyusername in $var) { 
+    $mystring = $mystring+","+"$Everyusername"}
+    $num = $mystring.Length-1
+    $final = $mystring.Substring(1,$num)
+    
+   Set-AzAnalysisServicesServer  -Name "$AnalysisServiceName" -Administrator "$final"
+}
+else 
+{
+Write-Warning -Verbose "Subscription $SubScriptionName is not exist or disbaled. Please double check"
+}

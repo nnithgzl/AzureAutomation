@@ -1,0 +1,5 @@
+$Allstorage = Get-AzStorageAccount  | where 'Kind' -ne 'BlobStorage' | select ResourceGroupName,StorageAccountName 
+foreach ( $eachstorage in $Allstorage ) {
+Set-AzCurrentStorageAccount -ResourceGroupName $eachstorage.ResourceGroupName -Name $eachstorage.StorageAccountName 
+Get-AzStorageShare | Get-AzStorageFile
+}

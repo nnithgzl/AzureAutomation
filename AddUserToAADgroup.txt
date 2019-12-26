@@ -1,0 +1,24 @@
+[CmdletBinding()]
+Param(
+    [Parameter(Mandatory=$true)] 
+    [string] $ADusername,
+    [Parameter(Mandatory=$true)] 
+    [string] $Groupname,
+    [Parameter(Mandatory=$true)] 
+    [string] $SubScriptionName
+     )
+Connect-AzAccount
+$AllSubScriptionName = Get-AzSubscription | Select-Object -ExpandProperty Name
+if ( $AllSubScriptionName -contains $SubScriptionName ) 
+{
+    Select-AzSubscription -Subscription $SubScriptionName
+    $UserID = Get-AzADUser | ?{$_.DisplayName -eq "$ADusername"} | Select-Object -ExpandProperty Id
+    Add-AzADGroupMember -MemberObjectId "$UserID" -TargetGroupDisplayName "$Groupname"
+    Get-AzADGroupMember -GroupDisplayName "$Groupname" | ?{$_.DisplayName -eq "$ADusername"} |select *
+}
+else 
+{
+Write-Warning -Verbose "Subscription $SubScriptionName is not exist or disbaled. Please double check"
+}
+
+ 

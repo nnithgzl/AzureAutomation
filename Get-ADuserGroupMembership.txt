@@ -1,0 +1,11 @@
+[CmdletBinding()]
+Param(
+    [Parameter(Mandatory=$true)] 
+    [string] $EmailAddress  
+     )
+
+if (!(Get-Module -ListAvailable  | ?{$_.Name -eq "AzureAD"})) 
+{ Install-Module AzureAD -AllowClobber -Force }
+
+Connect-AzureAD
+Get-AzureADUserMembership -ObjectId $EmailAddress | Select-Object displayname,Description | Sort-Object displayname | ft
